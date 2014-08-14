@@ -1,0 +1,17 @@
+package main
+
+import (
+	"log"
+
+	"github.com/melraidin/iptc"
+)
+
+func main() {
+	data, err := iptc.Open("test.jpg")
+
+	if err != nil {
+		log.Fatalf("Error: %s", err.Error())
+	}
+
+	log.Printf("%v\n", data)
+}
