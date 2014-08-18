@@ -70,8 +70,8 @@ func parseIptcData(iptcData *C.IptcData) (Data, error) {
 			parsed[int(dataSet.record)][int(dataSet.tag)] = fmt.Sprintf("%c", value[:(dataSet.size*3)-1])
 		default:
 			value := make([]C.uchar, 256)
-			C.iptc_dataset_get_data(dataSet, &value[0], C.uint(len(value)))
-			parsed[int(dataSet.record)][int(dataSet.tag)] = fmt.Sprintf("%s", value)
+			actualLength := C.iptc_dataset_get_data(dataSet, &value[0], C.uint(len(value)))
+			parsed[int(dataSet.record)][int(dataSet.tag)] = fmt.Sprintf("%s", value[:actualLength-1])
 		}
 	}
 
