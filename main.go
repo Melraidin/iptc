@@ -67,7 +67,17 @@ func parseIptcData(iptcData *C.IptcData) (Data, error) {
 		case C.IPTC_FORMAT_BINARY:
 			value := make([]C.char, 256)
 			C.iptc_dataset_get_as_str(dataSet, &value[0], C.uint(len(value)))
-			parsed[int(dataSet.record)][int(dataSet.tag)] = fmt.Sprintf("%c", value[:(dataSet.size*3)-1])
+
+			// Guard against data being shorter than specified.
+			dataLen := dataSet.size*3 - 1
+			if dataLen < 0 {
+				dataLen = 0
+			} else {
+				if int(dataLen) > len(value)-1 {
+					dataLen = C.uint(len(value) - 1)
+				}
+			}
+			parsed[int(dataSet.record)][int(dataSet.tag)] = fmt.Sprintf("%c", value[dataLen])
 		default:
 			value := make([]C.uchar, 256)
 			actualLength := C.iptc_dataset_get_data(dataSet, &value[0], C.uint(len(value)))
